@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: econofacil
+      POSTGRES_PASSWORD: econofacil
+      POSTGRES_DB: econofacil
+    ports:
+      - "5432:5432"
+    volumes:
+      - econofacil_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U econofacil"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://econofacil:econofacil@db:5432/econofacil
+      ENVIRONMENT: development
+      SECRET_KEY: troque-este-valor-em-producao
+    ports:
+      - "8000:8000"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./:/app
+
+volumes:
+  econofacil_pgdata:
