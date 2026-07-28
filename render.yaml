@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: econofacil-demo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PIX_WEBHOOK_SECRET
+        generateValue: true
